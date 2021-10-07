@@ -62,7 +62,7 @@ server.on("request", (req, res) => {
 			
 			ws.end();
 
-			res.writeHead(301, {'Location' : '/'});
+			res.writeHead(301, {'Location' : '/home'});
 
 			
        		res.end();
