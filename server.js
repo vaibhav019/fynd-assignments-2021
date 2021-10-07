@@ -3,8 +3,10 @@ const url = require("url");
 const fs = require("fs");
 const path = require("path");
 
+//const { Console } = require("console");
 const server = http.createServer();
 
+//let arr=[]
 server.on("request", (req, res) => {
 	if (req.url === "/home") {
 		res.setHeader("Content-Type", "text/html");
@@ -24,46 +26,49 @@ server.on("request", (req, res) => {
 		});
 
 		rs.pipe(res);
-	} else if (req.url === "/addcontactdata") {
-		let body = '';
+	} else if (req.url === "/message") {
+		
+		let dataitems = '';
 		req.on('data', chunk => {
-			console.log('chunk',chunk.toString());
 			
-		    body += chunk.toString();
+			
+		    dataitems += chunk.toString();
 		});
-		let json = {};
-
+		let obj = {};
+		
 		req.on('end', () => {
-		    console.log(body);
+		    console.log(dataitems);
 
-			let bodyarray = body.split('&');
+			let messagearray = dataitems.split('&');
 			
-			bodyarray.map((value)=>{
-				const keayValue = value.split('=');
-				json[keayValue[0]] = keayValue[1];
+			messagearray.map((value)=>{
+				const keyValue = value.split('=');
+				obj[keyValue[0]] = keyValue[1];
 			});
 
-			console.log(json);
-
-			const ws = fs.createWriteStream(path.join(__dirname, "contact.json"), {flags: 'a'});
+			console.log(obj);
+			//arr.push(obj);
+			//console.log(arr);
+			
+			
+			const ws = fs.createWriteStream(path.join(__dirname, "messages.txt"), {flags: 'a'});
 
 			ws.on("error", (error) => {
 				console.log(error.message);
 			});
-	
-			ws.write( JSON.stringify(json, undefined, 2) );
+			
+			ws.write( JSON.stringify(obj,undefined,4));
+			
+			
 			ws.end();
 
 			res.writeHead(301, {'Location' : '/'});
-       		res.end();
-		});
-		
-	
-		// req.on('')
-		// req.pipe(ws);
-		// console.log(req);
 
-        
+			
+       		res.end();
+			   
+		});    
+
 	}
 });
 
